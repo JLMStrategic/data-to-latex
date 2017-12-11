@@ -30,6 +30,7 @@ def add_skill(skill1, skill2):
         f_w.writelines(read_data)
     print("Added {} and {} as skill 1 and skill 2".format(skill1, skill2))
 
+
 # add_work_exp function
 #   creates a new work experience section for the TeX file
 #   company: name of the company
@@ -42,14 +43,15 @@ def add_work_exp(company, start_date, end_date, position):
     work_sec_start = '\\workExpStart'
     work_sec_end = '\\workExpEnd'
     pass
-    
+
+
 # add_work_desc function
 #   adds a new bullet point to the work experience section
 #   description: description bullet point
 def add_work_desc(description):
     pass
 
-def add_work_desc():
+
 # line search
 for i in range(0, len(read_data)):
     item = read_data[i].strip()
