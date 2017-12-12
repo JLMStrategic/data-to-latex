@@ -2,6 +2,8 @@ import os
 import io
 
 CWD = os.getcwd()
+RESUME_FOLDER = '/jlmres'
+# TODO: make new resumes go into jlmres folder, create folder if it does not exist
 
 # Search for this exact string on TeX file to know
 # which line to append to
@@ -10,7 +12,7 @@ SKILL_TEXT = '% SKILLS CODE HERE'
 WORK_TEXT = '% EXP CODE HERE'
 EDU_TEXT = '% EDU CODE HERE'
 
-    
+
 # Which line in TeX file to append to
 NAME_LINE = -1
 SKILL_LINE = -1
@@ -64,7 +66,7 @@ def add_skill(skill1, skill2, end=False):
 #     desc: list of descriptions for this specific job
 def add_work_exp(company, start_date, end_date, position, desc):
     new_work = '\\newWorkExp{{{}}}{{{}}}{{{}}}{{{}}}'.format(
-                        company, start_date, end_date, position)
+        company, start_date, end_date, position)
     work_sec_start = '\\workExpStart'
     work_sec_end = '\\workExpEnd'
     desc_items = ''
@@ -106,7 +108,8 @@ def add_edu(school, start_date, end_date, degree):
 
 # create_file function
 #     TeX file creation function. incorporates all add_*() functions
-#     filename: name of the pdf file they wish to receive
+#     filename: name of the pdf file they wish to receive 
+#               does not require file extension or path
 #     fullname: name of the person's resume
 #     skill_list: list of all skills they contain
 #           ex. [[skill1, skill2], [skill3, skill4]]
@@ -120,8 +123,12 @@ def create_file(filename, fullname, skill_list, work_list, edu_list):
     add_name(fullname)
 
     # TODO: allow odd number of skills
+    last_skill = skill_list[-1]
     for skill in skill_list:
-        add_skill(skill[0], skill[1])
+        if skill == last_skill:
+            add_skill(skill[0], skill[1], end=True)
+        else:
+            add_skill(skill[0], skill[1])
     for work in work_list:
         add_work_exp(work[0], work[1], work[2], work[3], work[4])
     for edu in edu_list:
@@ -176,4 +183,7 @@ def main():
     add_edu("No Name Community College", "Sep. 2011",
             "Jun. 2013", "Associates Degree in Information and Technology")
 
+create_file("res1", "Some Dude", [["Python", "Java"], ["Something", "Nothing"]], 
+[["Some Place", "Past", "Present", "Employee", ["Swept floors", "Cleaned dishes", "Cleaned restrooms", "Dumped Trash"]]], 
+[["No Name Community College", "Sep. 2011", "Jun. 2013", "Associates Degree in Information and Technology"]])
 # main()
