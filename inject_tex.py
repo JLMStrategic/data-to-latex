@@ -45,11 +45,9 @@ def add_work_exp(company, start_date, end_date, position, desc):
     work_sec_start = '\\workExpStart'
     work_sec_end = '\\workExpEnd'
     desc_items = ''
-    print(WORK_LINE)
 
     for item in desc:
         desc_items += add_work_desc(item)
-
 
     # inject new_work block onto TeX file
     read_data[WORK_LINE] = read_data[WORK_LINE].strip() + new_work + work_sec_start + desc_items + work_sec_end
@@ -74,26 +72,40 @@ def add_work_desc(description):
 def add_edu(school, start_date, end_date, degree):
     new_edu = '\\newEducation{{{}}}{{{}}}{{{}}}{{{}}}'.format(school, start_date, end_date, degree)
     read_data[EDU_LINE] = read_data[EDU_LINE].strip() + new_edu
+
     with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
         f_w.writelines(read_data)
     print("Added {} to resume".format(school))
- 
-# line search
-for i in range(0, len(read_data)):
-    item = read_data[i].strip()
-    if item == SKILL_TEXT and SKILL_LINE == -1:
-        SKILL_LINE = i + 1
-        i = 0
 
-    if item == WORK_TEXT and WORK_LINE == -1:
-        WORK_LINE = i + 1
-        i = 0
+def main():
+    # line search
+    global SKILL_LINE
+    global WORK_LINE
+    global EDU_LINE
+    for i in range(0, len(read_data)):
+        item = read_data[i].strip()
+        if item == SKILL_TEXT and SKILL_LINE == -1:
+            SKILL_LINE = i + 1
+            i = 0
 
-    if item == EDU_TEXT and EDU_LINE == -1:
-        EDU_LINE = i + 1
-        i = 0
+        if item == WORK_TEXT and WORK_LINE == -1:
+            WORK_LINE = i + 1
+            i = 0
 
-# testing
-# add_skill("Dish Wash", "Cashier")
-# add_work_exp("Some Place", "Past", "Present", "Employee", ["Swept floors", "Cleaned dishes", "Cleaned restrooms", "Dumped Trash"])
-add_edu("University of Califonia, Davis", "Sep. 2013", "Jun. 2017", "Bachelor's of Science, Computer Science")
+        if item == EDU_TEXT and EDU_LINE == -1:
+            EDU_LINE = i + 1
+            i = 0
+
+    # testing
+    add_skill("Dish Wash", "Cashier")
+    add_skill("Python", "Java")
+    add_skill("Something", "Nothing")
+    add_work_exp("Some Place", "Past", "Present", "Employee",
+                 ["Swept floors", "Cleaned dishes", "Cleaned restrooms", "Dumped Trash"])
+    add_work_exp("Another Place", "Past", "Present", "Boss", ["Slacked Off", "Drank Soda"])
+    add_edu("University of Califonia, Davis", "Sep. 2013",
+            "Jun. 2017", "Bachelor's of Science, Computer Science")
+    add_edu("No Name Community College", "Sep. 2011",
+            "Jun. 2013", "Associates Degree in Information and Technology")
+
+main()
