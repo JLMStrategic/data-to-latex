@@ -23,11 +23,17 @@ with open(CWD + '/JLM_Resume.tex', 'r') as f:
 #     adds skill1 and skill2 onto the skills section of the TeX file
 #     skill1: skill to appear on left side
 #     skill2: skill to appear on right side
-def add_skill(skill1, skill2):
+#     end: last skills bullets will not have extra padding. default=False
+def add_skill(skill1, skill2, end=False):
     add_line = '\\skillItem{{{}}}{{{}}}\n'.format(skill1, skill2)
+    add_line_end = '\\skillItemEnd{{{}}}{{{}}}\n'.format(skill1, skill2)
 
     # inject add_line one the SKILL_LINE on TeX doc
-    read_data[SKILL_LINE] = read_data[SKILL_LINE].strip() + add_line
+    if end:
+        read_data[SKILL_LINE] = read_data[SKILL_LINE].strip() + add_line_end
+    else:
+        read_data[SKILL_LINE] = read_data[SKILL_LINE].strip() + add_line
+
     with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
         f_w.writelines(read_data)
     print("Added {} and {} as skill 1 and skill 2".format(skill1, skill2))
@@ -77,6 +83,7 @@ def add_edu(school, start_date, end_date, degree):
         f_w.writelines(read_data)
     print("Added {} to resume".format(school))
 
+# main function for testing, running, etc.
 def main():
     # line search
     global SKILL_LINE
@@ -99,7 +106,7 @@ def main():
     # testing
     add_skill("Dish Wash", "Cashier")
     add_skill("Python", "Java")
-    add_skill("Something", "Nothing")
+    add_skill("Something", "Nothing", end=True)
     add_work_exp("Some Place", "Past", "Present", "Employee",
                  ["Swept floors", "Cleaned dishes", "Cleaned restrooms", "Dumped Trash"])
     add_work_exp("Another Place", "Past", "Present", "Boss", ["Slacked Off", "Drank Soda"])
