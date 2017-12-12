@@ -9,6 +9,7 @@ SKILL_TEXT = '% SKILLS CODE HERE'
 WORK_TEXT = '% EXP CODE HERE'
 EDU_TEXT= '% EDU CODE HERE'
 
+    
 # Which line in TeX file to append to
 SKILL_LINE = -1
 WORK_LINE = -1
@@ -83,12 +84,15 @@ def add_edu(school, start_date, end_date, degree):
         f_w.writelines(read_data)
     print("Added {} to resume".format(school))
 
-# main function for testing, running, etc.
-def main():
-    # line search
+
+# edit_globals
+#     changes where the injection lines would be found
+def edit_skill_global():
     global SKILL_LINE
     global WORK_LINE
     global EDU_LINE
+
+    # line search
     for i in range(0, len(read_data)):
         item = read_data[i].strip()
         if item == SKILL_TEXT and SKILL_LINE == -1:
@@ -103,7 +107,11 @@ def main():
             EDU_LINE = i + 1
             i = 0
 
+# main function for testing, running, etc.
+def main():
     # testing
+    edit_skill_global()
+
     add_skill("Dish Wash", "Cashier")
     add_skill("Python", "Java")
     add_skill("Something", "Nothing", end=True)
