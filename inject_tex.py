@@ -5,7 +5,12 @@ CWD = os.getcwd()
 THIS_FILE = __file__
 print(THIS_FILE)
 RESUME_FOLDER = '/jlmres'
-# TODO: make new resumes go into jlmres folder, create folder if it does not exist
+
+# make new resumes go into jlmres folder, create folder if it does not exist
+if not os.path.isdir(CWD + RESUME_FOLDER):
+    os.makedirs(CWD + RESUME_FOLDER)
+OUT_DIR = '.' + RESUME_FOLDER + '/'
+
 
 # Search for this exact string on TeX file to know
 # which line to append to
@@ -23,7 +28,6 @@ EDU_LINE = -1
 
 # Open the TeX file and store onto read_data list
 with open(CWD + '/JLM_Resume.tex', 'r') as f:
-    # read_data = [line.strip() for line in f]
     read_data = f.readlines()
 
 
@@ -34,8 +38,6 @@ def add_name(name):
     add_name = '\\Huge{{{}}}'.format(name)
     read_data[NAME_LINE] = read_data[NAME_LINE].strip() + add_name
 
-    # with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
-    #     f_w.writelines(read_data)
     print("Added name: {}".format(name))
 
 
@@ -54,8 +56,6 @@ def add_skill(skill1, skill2, end=False):
     else:
         read_data[SKILL_LINE] = read_data[SKILL_LINE].strip() + add_line
 
-    # with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
-    #     f_w.writelines(read_data)
     print("Added {} and {} as skill 1 and skill 2".format(skill1, skill2))
 
 
@@ -80,8 +80,6 @@ def add_work_exp(company, start_date, end_date, position, desc):
     read_data[WORK_LINE] = read_data[WORK_LINE].strip() +\
                         new_work + work_sec_start + desc_items + work_sec_end
 
-    # with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
-    #     f_w.writelines(read_data)
     print("Added {} job experience to resume".format(company))
 
 
@@ -103,8 +101,6 @@ def add_edu(school, start_date, end_date, degree):
     new_edu = '\\newEducation{{{}}}{{{}}}{{{}}}{{{}}}'.format(school, start_date, end_date, degree)
     read_data[EDU_LINE] = read_data[EDU_LINE].strip() + new_edu
 
-    # with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
-    #     f_w.writelines(read_data)
     print("Added {} to resume".format(school))
 
 
@@ -137,9 +133,11 @@ def create_file(filename, fullname, skill_list, work_list, edu_list):
         add_edu(edu[0], edu[1], edu[2], edu[3])
 
     # writes all changes to file
-    with open(CWD + '/' + filename + '.tex', 'w+') as file_w:
+    with open(OUT_DIR + filename + '.tex', 'w+') as file_w:
         file_w.writelines(read_data)
+    print("Created new {}.tex file".format(filename))
 
+    print("Running pdflatex to compile {}.tex to pdf".format(filename))
     run_pdf(filename)
 
 
@@ -175,8 +173,8 @@ def edit_globals():
 #     runs the command pdflatex with the given tex file
 #     filename: name of the tex file, does not need the .tex extension
 def run_pdf(filename):
-    full_file = './' + filename + '.tex'
-    os.system('pdflatex {}'.format(full_file))
+    full_file = OUT_DIR + filename + '.tex'
+    os.system('pdflatex --output-directory={} {} '.format(OUT_DIR, full_file))
 
 
 # main function for testing, running, etc.
