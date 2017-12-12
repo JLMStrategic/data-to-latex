@@ -5,12 +5,14 @@ CWD = os.getcwd()
 
 # Search for this exact string on TeX file to know
 # which line to append to
+NAME_TEXT = '% NAME CODE HERE'
 SKILL_TEXT = '% SKILLS CODE HERE'
 WORK_TEXT = '% EXP CODE HERE'
-EDU_TEXT= '% EDU CODE HERE'
+EDU_TEXT = '% EDU CODE HERE'
 
     
 # Which line in TeX file to append to
+NAME_LINE = -1
 SKILL_LINE = -1
 WORK_LINE = -1
 EDU_LINE = -1
@@ -19,6 +21,16 @@ EDU_LINE = -1
 with open(CWD + '/JLM_Resume.tex', 'r') as f:
     # read_data = [line.strip() for line in f]
     read_data = f.readlines()
+
+# add_name function
+#     adds skill1 and skill2 onto the skills section of the TeX file
+#     name: person's full name {first, middle, last} as a string
+def add_name(name):
+    add_name = '\\Huge{{{}}}'.format(name)
+    read_data[NAME_LINE] = read_data[NAME_LINE].strip() + add_name
+    with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
+        f_w.writelines(read_data)
+    print("Added name: {}".format(name))
 
 # add_skill function
 #     adds skill1 and skill2 onto the skills section of the TeX file
@@ -88,6 +100,7 @@ def add_edu(school, start_date, end_date, degree):
 # edit_globals
 #     changes where the injection lines would be found
 def edit_skill_global():
+    global NAME_LINE
     global SKILL_LINE
     global WORK_LINE
     global EDU_LINE
@@ -95,6 +108,10 @@ def edit_skill_global():
     # line search
     for i in range(0, len(read_data)):
         item = read_data[i].strip()
+        if item == NAME_TEXT and NAME_LINE == -1:
+            NAME_LINE = i + 1
+            i = 0
+
         if item == SKILL_TEXT and SKILL_LINE == -1:
             SKILL_LINE = i + 1
             i = 0
@@ -112,6 +129,7 @@ def main():
     # testing
     edit_skill_global()
 
+    add_name("Some Dudes")
     add_skill("Dish Wash", "Cashier")
     add_skill("Python", "Java")
     add_skill("Something", "Nothing", end=True)
