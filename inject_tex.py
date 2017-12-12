@@ -22,15 +22,18 @@ with open(CWD + '/JLM_Resume.tex', 'r') as f:
     # read_data = [line.strip() for line in f]
     read_data = f.readlines()
 
+
 # add_name function
 #     adds skill1 and skill2 onto the skills section of the TeX file
 #     name: person's full name {first, middle, last} as a string
 def add_name(name):
     add_name = '\\Huge{{{}}}'.format(name)
     read_data[NAME_LINE] = read_data[NAME_LINE].strip() + add_name
-    with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
-        f_w.writelines(read_data)
+
+    # with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
+    #     f_w.writelines(read_data)
     print("Added name: {}".format(name))
+
 
 # add_skill function
 #     adds skill1 and skill2 onto the skills section of the TeX file
@@ -47,8 +50,8 @@ def add_skill(skill1, skill2, end=False):
     else:
         read_data[SKILL_LINE] = read_data[SKILL_LINE].strip() + add_line
 
-    with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
-        f_w.writelines(read_data)
+    # with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
+    #     f_w.writelines(read_data)
     print("Added {} and {} as skill 1 and skill 2".format(skill1, skill2))
 
 
@@ -60,7 +63,8 @@ def add_skill(skill1, skill2, end=False):
 #     position: job title
 #     desc: list of descriptions for this specific job
 def add_work_exp(company, start_date, end_date, position, desc):
-    new_work = '\\newWorkExp{{{}}}{{{}}}{{{}}}{{{}}}'.format(company, start_date, end_date, position)
+    new_work = '\\newWorkExp{{{}}}{{{}}}{{{}}}{{{}}}'.format(
+                        company, start_date, end_date, position)
     work_sec_start = '\\workExpStart'
     work_sec_end = '\\workExpEnd'
     desc_items = ''
@@ -69,9 +73,11 @@ def add_work_exp(company, start_date, end_date, position, desc):
         desc_items += add_work_desc(item)
 
     # inject new_work block onto TeX file
-    read_data[WORK_LINE] = read_data[WORK_LINE].strip() + new_work + work_sec_start + desc_items + work_sec_end
-    with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
-        f_w.writelines(read_data)
+    read_data[WORK_LINE] = read_data[WORK_LINE].strip() +\
+                        new_work + work_sec_start + desc_items + work_sec_end
+
+    # with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
+    #     f_w.writelines(read_data)
     print("Added {} job experience to resume".format(company))
 
 
@@ -83,6 +89,7 @@ def add_work_desc(description):
     new_desc = '\\workExpItem{{{}}}'.format(description)
     return new_desc
 
+
 # add_edu function
 #     school: previous school name
 #     start_date: enrollment date
@@ -92,14 +99,41 @@ def add_edu(school, start_date, end_date, degree):
     new_edu = '\\newEducation{{{}}}{{{}}}{{{}}}{{{}}}'.format(school, start_date, end_date, degree)
     read_data[EDU_LINE] = read_data[EDU_LINE].strip() + new_edu
 
-    with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
-        f_w.writelines(read_data)
+    # with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
+    #     f_w.writelines(read_data)
     print("Added {} to resume".format(school))
 
 
+# create_file function
+#     TeX file creation function. incorporates all add_*() functions
+#     filename: name of the pdf file they wish to receive
+#     fullname: name of the person's resume
+#     skill_list: list of all skills they contain
+#           ex. [[skill1, skill2], [skill3, skill4]]
+#     work_list: list of all previous jobs with nested descriptions list
+#           ex. [[company, start, end, position, [desc1, desc2]]]
+#     edu_list: list of all previous education
+#           ex. [[school1, start, end, degree], [school2, start, end, degree]]
+def create_file(filename, fullname, skill_list, work_list, edu_list):
+    edit_globals()
+
+    add_name(fullname)
+
+    # TODO: allow odd number of skills
+    for skill in skill_list:
+        add_skill(skill[0], skill[1])
+    for work in work_list:
+        add_work_exp(work[0], work[1], work[2], work[3], work[4])
+    for edu in edu_list:
+        add_edu(edu[0], edu[1], edu[2], edu[3])
+
+    # writes all changes to file
+    with open(CWD + '/' + filename + '.tex', 'w+') as file_w:
+        file_w.writelines(read_data)
+
 # edit_globals
 #     changes where the injection lines would be found
-def edit_skill_global():
+def edit_globals():
     global NAME_LINE
     global SKILL_LINE
     global WORK_LINE
@@ -124,10 +158,11 @@ def edit_skill_global():
             EDU_LINE = i + 1
             i = 0
 
+
 # main function for testing, running, etc.
 def main():
     # testing
-    edit_skill_global()
+    edit_globals()
 
     add_name("Some Dudes")
     add_skill("Dish Wash", "Cashier")
@@ -141,4 +176,4 @@ def main():
     add_edu("No Name Community College", "Sep. 2011",
             "Jun. 2013", "Associates Degree in Information and Technology")
 
-main()
+# main()
