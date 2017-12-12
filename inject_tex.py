@@ -66,7 +66,18 @@ def add_work_desc(description):
     new_desc = '\\workExpItem{{{}}}'.format(description)
     return new_desc
 
-
+# add_edu function
+#     school: previous school name
+#     start_date: enrollment date
+#     end_date: graduation date
+#     degree: degree
+def add_edu(school, start_date, end_date, degree):
+    new_edu = '\\newEducation{{{}}}{{{}}}{{{}}}{{{}}}'.format(school, start_date, end_date, degree)
+    read_data[EDU_LINE] = read_data[EDU_LINE].strip() + new_edu
+    with open(CWD + '/JLM_Resume.tex', 'w') as f_w:
+        f_w.writelines(read_data)
+    print("Added {} to resume".format(school))
+ 
 # line search
 for i in range(0, len(read_data)):
     item = read_data[i].strip()
@@ -83,5 +94,6 @@ for i in range(0, len(read_data)):
         i = 0
 
 # testing
-# add_skill("Hello", "hi there")
-add_work_exp("Some Place", "Past", "Present", "Employee", ["Swept floors", "Cleaned dishes", "Cleaned restrooms", "Dumped Trash"])
+# add_skill("Dish Wash", "Cashier")
+# add_work_exp("Some Place", "Past", "Present", "Employee", ["Swept floors", "Cleaned dishes", "Cleaned restrooms", "Dumped Trash"])
+add_edu("University of Califonia, Davis", "Sep. 2013", "Jun. 2017", "Bachelor's of Science, Computer Science")
