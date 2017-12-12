@@ -2,6 +2,8 @@ import os
 import io
 
 CWD = os.getcwd()
+THIS_FILE = __file__
+print(THIS_FILE)
 RESUME_FOLDER = '/jlmres'
 # TODO: make new resumes go into jlmres folder, create folder if it does not exist
 
@@ -138,6 +140,9 @@ def create_file(filename, fullname, skill_list, work_list, edu_list):
     with open(CWD + '/' + filename + '.tex', 'w+') as file_w:
         file_w.writelines(read_data)
 
+    run_pdf(filename)
+
+
 # edit_globals
 #     changes where the injection lines would be found
 def edit_globals():
@@ -166,6 +171,14 @@ def edit_globals():
             i = 0
 
 
+# run_pdf
+#     runs the command pdflatex with the given tex file
+#     filename: name of the tex file, does not need the .tex extension
+def run_pdf(filename):
+    full_file = './' + filename + '.tex'
+    os.system('pdflatex {}'.format(full_file))
+
+
 # main function for testing, running, etc.
 def main():
     # testing
@@ -186,4 +199,5 @@ def main():
 create_file("res1", "Some Dude", [["Python", "Java"], ["Something", "Nothing"]], 
 [["Some Place", "Past", "Present", "Employee", ["Swept floors", "Cleaned dishes", "Cleaned restrooms", "Dumped Trash"]]], 
 [["No Name Community College", "Sep. 2011", "Jun. 2013", "Associates Degree in Information and Technology"]])
+
 # main()
