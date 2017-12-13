@@ -106,7 +106,7 @@ def add_edu(school, start_date, end_date, degree):
 
 # create_file function
 #     TeX file creation function. incorporates all add_*() functions
-#     filename: name of the pdf file they wish to receive 
+#     filename: name of the pdf file they wish to receive
 #               does not require file extension or path
 #     fullname: name of the person's resume
 #     skill_list: list of all skills they contain
