@@ -147,17 +147,18 @@ def find_lines():
             i = 0
 
         if item == SKILL_TEXT and result['SkillLine'] == -1:
-            result['NameLine'] = i + 1
+            result['SkillLine'] = i + 1
             i = 0
 
         if item == WORK_TEXT and result['WorkLine'] == -1:
-            result['NameLine'] = i + 1
+            result['WorkLine'] = i + 1
             i = 0
 
         if item == EDU_TEXT and result['EduLine'] == -1:
-            result['NameLine'] = i + 1
+            result['EduLine'] = i + 1
             i = 0
 
+    print(result)
     return result
 
 # run_pdf
