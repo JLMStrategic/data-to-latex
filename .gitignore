@@ -1,4 +1,6 @@
 images/
 json/
 jlmres/
+__pycache__/
+dump/
 JLM_Resume.*
