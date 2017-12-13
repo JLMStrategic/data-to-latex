@@ -3,7 +3,6 @@ import io
 
 CWD = os.getcwd()
 THIS_FILE = __file__
-print(THIS_FILE)
 RESUME_FOLDER = '/jlmres'
 
 # make new resumes go into jlmres folder, create folder if it does not exist
@@ -70,9 +69,11 @@ def add_work_exp(work_line, company, start_date, end_date, position, desc):
         desc_items += add_work_desc(item)
 
     # inject new_work block onto TeX file
-    read_data[work_line] = read_data[work_line].strip() +\
-                        new_work + work_sec_start + desc_items + work_sec_end
-
+    if desc:
+        read_data[work_line] = read_data[work_line].strip() +\
+                            new_work + work_sec_start + desc_items + work_sec_end
+    else:
+        read_data[work_line] = read_data[work_line].strip() + new_work
     print("Added {} job experience to resume".format(company))
 
 
@@ -114,16 +115,20 @@ def create_file(filename, fullname, skill_list, work_list, edu_list):
     add_name(input_lines['NameLine'], fullname)
 
     # TODO: allow odd number of skills
-    last_skill = skill_list[-1]
+    last_skill = skill_list[-1] if skill_list else []
     for skill in skill_list:
+        if not last_skill:
+            break
         if skill == last_skill:
             add_skill(input_lines['SkillLine'], skill[0], skill[1], end=True)
         else:
             add_skill(input_lines['SkillLine'], skill[0], skill[1])
     for work in work_list:
-        add_work_exp(input_lines['WorkLine'], work[0], work[1], work[2], work[3], work[4])
+        if work_list:
+            add_work_exp(input_lines['WorkLine'], work[0], work[1], work[2], work[3], work[4])
     for edu in edu_list:
-        add_edu(input_lines['EduLine'], edu[0], edu[1], edu[2], edu[3])
+        if edu_list:
+            add_edu(input_lines['EduLine'], edu[0], edu[1], edu[2], edu[3])
 
     # writes all changes to file
     with open(OUT_DIR + filename + '.tex', 'w+') as file_w:
@@ -168,8 +173,8 @@ def run_pdf(filename):
     full_file = OUT_DIR + filename + '.tex'
     os.system('pdflatex --output-directory={} {} '.format(OUT_DIR, full_file))
 
-create_file("res1", "Some Dude", [["Python", "Java"], ["Something", "Nothing"]], 
-[["Some Place", "Past", "Present", "Employee", ["Swept floors", "Cleaned dishes", "Cleaned restrooms", "Dumped Trash"]]], 
-[["No Name Community College", "Sep. 2011", "Jun. 2013", "Associates Degree in Information and Technology"]])
+# create_file("res1", "Some Dude", [["Python", "Java"], ["Something", "Nothing"]], 
+# [["Some Place", "Past", "Present", "Employee", ["Swept floors", "Cleaned dishes", "Cleaned restrooms", "Dumped Trash"]]], 
+# [["No Name Community College", "Sep. 2011", "Jun. 2013", "Associates Degree in Information and Technology"]])
 
 # main()
