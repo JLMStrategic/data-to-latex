@@ -22,7 +22,7 @@ SKILL_TEXT = '% SKILLS CODE HERE'
 WORK_TEXT = '% EXP CODE HERE'
 EDU_TEXT = '% EDU CODE HERE'
 
-with open(CWD + '/JLM_Resume.tex', 'r') as f:
+with open(CWD + '/JLM_Resume.tex', 'r', encoding='utf8') as f:
     READ = f.readlines()
 
 
@@ -139,7 +139,7 @@ def create_file(filename, fullname, skill_list, work_list, edu_list):
             add_edu(read_data, input_lines['EduLine'], edu[0], edu[1], edu[2], edu[3])
 
     # writes all changes to file
-    with open(DUMP_DIR + filename + '.tex', 'w+') as file_w:
+    with open(DUMP_DIR + filename + '.tex', 'w+', encoding='utf8') as file_w:
         file_w.writelines(read_data)
     print("Created new {}.tex file".format(filename))
 
