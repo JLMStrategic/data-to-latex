@@ -1,5 +1,7 @@
+""" The inject_tex.py script allows TeX code to be injected onto a template of the JLM Resume
+    in LaTeX format. Then, the script will run pdflatex on all the new .tex files created. """
+
 import os
-import io
 
 CWD = os.getcwd()
 THIS_FILE = __file__
@@ -27,9 +29,11 @@ with open(CWD + '/JLM_Resume.tex', 'r', encoding='utf8') as f:
 
 
 # add_name function
-#     adds skill1 and skill2 onto the skills section of the TeX file
 #     name: person's full name {first, middle, last} as a string
 def add_name(read_data, name_line, name):
+    """ Adds skill1 and skill2 onto the skills section of the TeX file. """
+
+
     new_name = '\\Huge{{{}}}'.format(name)
     read_data[name_line] = read_data[name_line].strip() + new_name
 
@@ -37,13 +41,19 @@ def add_name(read_data, name_line, name):
 
 
 # add_skill function
-#     adds skill1 and skill2 onto the skills section of the TeX file
 #     skill1: skill to appear on left side
 #     skill2: skill to appear on right side
 #     end: last skills bullets will not have extra padding. default=False
 def add_skill(read_data, skill_line, skill1, skill2, end=False):
+    """ Adds skill1 and skill2 onto the skills section of the TeX file. """
+
     add_line = '\\skillItem{{{}}}{{{}}}\n'.format(skill1, skill2)
-    add_line_end = '\\skillItemEnd{{{}}}{{{}}}\n'.format(skill1, skill2)
+
+    # considers odd number of skill bullet points
+    if not skill2:
+        add_line_end = '\\skillOneItemEnd{{{}}}'.format(skill1)
+    else:
+        add_line_end = '\\skillItemEnd{{{}}}{{{}}}\n'.format(skill1, skill2)
 
     # inject add_line one the SKILL_LINE on TeX doc
     if end:
@@ -51,17 +61,18 @@ def add_skill(read_data, skill_line, skill1, skill2, end=False):
     else:
         read_data[skill_line] = read_data[skill_line].strip() + add_line
 
-    print("Added {} and {} as skill 1 and skill 2".format(skill1, skill2))
+    print("Added {} and {} as new row of skills".format(skill1, skill2))
 
 
 #  add_work_exp function
-#     creates a new work experience section for the TeX file
 #     company: name of the company
 #     start_date: date started working
 #     end_date: date ended working
 #     position: job title
 #     desc: list of descriptions for this specific job
 def add_work_exp(read_data, work_line, company, start_date, end_date, position, desc):
+    """ Creates new work experience subsection. """
+
     new_work = '\\newWorkExp{{{}}}{{{}}}{{{}}}{{{}}}'.format(
         company, start_date, end_date, position)
     work_sec_start = '\\workExpStart'
@@ -81,10 +92,11 @@ def add_work_exp(read_data, work_line, company, start_date, end_date, position, 
 
 
 # add_work_desc function
-#     adds a new bullet point to the work experience section
 #     description: description bullet point
 #     last: last bullet point needs specific formatting
 def add_work_desc(description):
+    """ Adds a new buillet point onto the description section of work experience. """
+
     new_desc = '\\workExpItem{{{}}}'.format(description)
     return new_desc
 
@@ -95,6 +107,8 @@ def add_work_desc(description):
 #     end_date: graduation date
 #     degree: degree
 def add_edu(read_data, edu_line, school, start_date, end_date, degree):
+    """ Adds education information onto its section. """
+
     new_edu = '\\newEducation{{{}}}{{{}}}{{{}}}{{{}}}'.format(school, start_date, end_date, degree)
     read_data[edu_line] = read_data[edu_line].strip() + new_edu
 
@@ -102,7 +116,6 @@ def add_edu(read_data, edu_line, school, start_date, end_date, degree):
 
 
 # create_file function
-#     TeX file creation function. incorporates all add_*() functions
 #     filename: name of the pdf file they wish to receive
 #               does not require file extension or path
 #     fullname: name of the person's resume
@@ -113,16 +126,14 @@ def add_edu(read_data, edu_line, school, start_date, end_date, degree):
 #     edu_list: list of all previous education
 #           ex. [[school1, start, end, degree], [school2, start, end, degree]]
 def create_file(filename, fullname, skill_list, work_list, edu_list):
-    # Open the TeX file and store onto read_data list
-    # with open(CWD + '/JLM_Resume.tex', 'r') as f:
-    #     read_data = f.readlines()
-    
+    """ TeX file creation function. incorporates all add_*() functions """
+
     read_data = list(READ)
     input_lines = find_lines(read_data)
 
     add_name(read_data, input_lines['NameLine'], fullname)
 
-    # TODO: allow odd number of skills
+    # odd skill lists should have "" as the last skill
     last_skill = skill_list[-1] if skill_list else []
     for skill in skill_list:
         if not last_skill:
@@ -133,7 +144,8 @@ def create_file(filename, fullname, skill_list, work_list, edu_list):
             add_skill(read_data, input_lines['SkillLine'], skill[0], skill[1])
     for work in work_list:
         if work_list:
-            add_work_exp(read_data, input_lines['WorkLine'], work[0], work[1], work[2], work[3], work[4])
+            add_work_exp(read_data, input_lines['WorkLine'],
+                         work[0], work[1], work[2], work[3], work[4])
     for edu in edu_list:
         if edu_list:
             add_edu(read_data, input_lines['EduLine'], edu[0], edu[1], edu[2], edu[3])
@@ -147,43 +159,42 @@ def create_file(filename, fullname, skill_list, work_list, edu_list):
     run_pdf(filename)
 
 
-# edit_globals
-#     changes where the injection lines would be found
+# find_lines
+#     read_data: file list after using open()
 def find_lines(read_data):
+    """ changes where the injection lines would be found """
+
     result = {'NameLine': -1, 'SkillLine': -1, 'WorkLine': -1, 'EduLine': -1}
 
     # line search
-    for i in range(0, len(read_data)):
-        item = read_data[i].strip()
+    for index, value in enumerate(read_data):
+        item = value.strip()
         if item == NAME_TEXT and result['NameLine'] == -1:
-            result['NameLine'] = i + 1
-            i = 0
+            result['NameLine'] = index + 1
+            index = 0
 
         if item == SKILL_TEXT and result['SkillLine'] == -1:
-            result['SkillLine'] = i + 1
-            i = 0
+            result['SkillLine'] = index + 1
+            index = 0
 
         if item == WORK_TEXT and result['WorkLine'] == -1:
-            result['WorkLine'] = i + 1
-            i = 0
+            result['WorkLine'] = index + 1
+            index = 0
 
         if item == EDU_TEXT and result['EduLine'] == -1:
-            result['EduLine'] = i + 1
-            i = 0
+            result['EduLine'] = index + 1
+            index = 0
 
     print(result)
     return result
 
 # run_pdf
-#     runs the command pdflatex with the given tex file then places pdfs 
-#     to the res folder and other files onto a dump folder
 #     filename: name of the tex file, does not need the .tex extension
 def run_pdf(filename):
+    """ runs the command pdflatex with the given tex file then places pdfs
+    to the res folder and other files onto a dump folder """
+
     full_file = DUMP_DIR + filename + '.tex'
     # pdf_folder = '.' + OUT_DIR
     os.system('pdflatex --output-directory={} {}'.format(DUMP_DIR, full_file))
     os.system('mv {}/*.pdf {}'.format(DUMP_DIR, OUT_DIR))
-
-# create_file("res1", "Some Dude", [["Python", "Java"], ["Something", "Nothing"]], 
-# [["Some Place", "Past", "Present", "Employee", ["Swept floors", "Cleaned dishes", "Cleaned restrooms", "Dumped Trash"]]], 
-# [["No Name Community College", "Sep. 2011", "Jun. 2013", "Associates Degree in Information and Technology"]])
