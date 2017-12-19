@@ -24,6 +24,10 @@ SKILL_TEXT = '% SKILLS CODE HERE'
 WORK_TEXT = '% EXP CODE HERE'
 EDU_TEXT = '% EDU CODE HERE'
 
+PROJ_TEXT = '% PROJECTS CODE HERE'
+AWARD_TEXT = '% AWARDS CODE HERE'
+CERT_TEXT = '% CERTIFICATIONS CODE HERE'
+
 with open(CWD + '/JLM_Resume.tex', 'r', encoding='utf8') as f:
     READ = f.readlines()
 
@@ -32,7 +36,6 @@ with open(CWD + '/JLM_Resume.tex', 'r', encoding='utf8') as f:
 #     name: person's full name {first, middle, last} as a string
 def add_name(read_data, name_line, name):
     """ Adds skill1 and skill2 onto the skills section of the TeX file. """
-
 
     new_name = '\\Huge{{{}}}'.format(name)
     read_data[name_line] = read_data[name_line].strip() + new_name
@@ -115,6 +118,70 @@ def add_edu(read_data, edu_line, school, start_date, end_date, degree):
     print("Added {} to resume".format(school))
 
 
+# add_proj function
+#     project: project title, location optional
+#     start_date: date person began working on project
+#     end_date: date person stopped working on project
+#     summary: overall summary of project
+#     role: person's role in said project
+def add_proj(read_data, proj_line, project, start_date, end_date, summary, role):
+    """ OPTIONAL. creates a project section in the middle of the pdf and lists any given
+    projects the person/candidate has worked on. """
+
+    # add section if it is the first project to added
+    if not read_data[proj_line]:
+        new_proj_sec = '\\section{PROJECTS}'
+        read_data[proj_line] = new_proj_sec
+
+    new_proj = '\\newProj{{{}}}{{{}}}{{{}}}'.format(project, start_date, end_date)
+    new_desc = '\\projectDescription{{{}}}{{{}}}'.format(summary, role)
+
+    read_data[proj_line] = read_data[proj_line].strip() + new_proj + new_desc
+    print("Added {} to optional projects section".format(project))
+
+
+# add_award function
+#     awards_list: full description of the award, including date
+def add_award(read_data, award_line, awards_list):
+    """ OPTIONAL. creates a new awards section and shows a list of the candidate's awards """
+
+    if not read_data[award_line]:
+        new_award_sec = '\\section{AWARDS}'
+        read_data[award_line] = new_award_sec
+
+    new_award_start = '\\awardCertStart'
+    new_award_end = '\\awardCertEnd'
+    award_items = ''
+
+    for award in awards_list:
+        award_items += '\\awardCertItem{{{}}}'.format(award)
+
+    read_data[award_line] = read_data[award_line].strip() + new_award_start +\
+                            award_items + new_award_end
+    print("Added new optional awards section.")
+
+
+# add_cert function
+#     cert_list: full description of the certification, including date
+def add_cert(read_data, award_line, cert_list):
+    """ OPTIONAL. creates a new awards section and shows a list of the candidate's awards """
+
+    if not read_data[award_line]:
+        new_award_sec = '\\section{CERTIFICATIONS}'
+        read_data[award_line] = new_award_sec
+
+    new_cert_start = '\\awardCertStart'
+    new_cert_end = '\\awardCertEnd'
+    cert_items = ''
+
+    for cert in cert_list:
+        cert_items += '\\awardCertItem{{{}}}'.format(cert)
+
+    read_data[award_line] = read_data[award_line].strip() + new_cert_start +\
+                            cert_items + new_cert_end
+    print("Added new optional cerifications section.")
+
+
 # create_file function
 #     filename: name of the pdf file they wish to receive
 #               does not require file extension or path
@@ -188,12 +255,14 @@ def find_lines(read_data):
     print(result)
     return result
 
+
 # run_pdf
 #     filename: name of the tex file, does not need the .tex extension
 def run_pdf(filename):
     """ runs the command pdflatex with the given tex file then places pdfs
     to the res folder and other files onto a dump folder """
 
+    # note: only works on git bash when testing
     full_file = DUMP_DIR + filename + '.tex'
     # pdf_folder = '.' + OUT_DIR
     os.system('pdflatex --output-directory={} {}'.format(DUMP_DIR, full_file))
