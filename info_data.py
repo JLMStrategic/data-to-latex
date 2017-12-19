@@ -1,3 +1,6 @@
+""" The info_data.py script reads json files and uses the resume data inside said files
+    to run the create_file() function from inject_tex.py insert data onto the resume. """
+
 import json
 import os
 from pprint import pprint
@@ -6,7 +9,7 @@ from inject_tex import create_file
 
 JSON_DIR = './json'
 JLM_RES_DIR = './jlmres'
-json_files = [f for f in os.listdir(JSON_DIR) if os.path.isfile(os.path.join(JSON_DIR, f))]
+JSON_FILES = [f for f in os.listdir(JSON_DIR) if os.path.isfile(os.path.join(JSON_DIR, f))]
 
 
 def check_exist(prefix, key_list):
@@ -32,7 +35,7 @@ def check_exist(prefix, key_list):
 
 
 def main():
-    for file in json_files:
+    for file in JSON_FILES:
         with open(JSON_DIR + '/' + file, encoding='utf8') as json_file:
             data = json.load(json_file)
 
