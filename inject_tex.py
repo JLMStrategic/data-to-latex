@@ -28,8 +28,50 @@ PROJ_TEXT = '% PROJECTS CODE HERE'
 AWARD_TEXT = '% AWARDS CODE HERE'
 CERT_TEXT = '% CERTIFICATIONS CODE HERE'
 
+# find_lines
+#     read_data: file list after using open()
+def find_lines(read_data):
+    """ changes where the injection lines would be found """
+
+    result = {}
+    # line search
+    for index, value in enumerate(read_data):
+        item = value.strip()
+        if item == NAME_TEXT and 'NameLine' not in result:
+            result['NameLine'] = index + 1
+            index = 0
+
+        if item == SKILL_TEXT and 'SkillLine' not in result:
+            result['SkillLine'] = index + 1
+            index = 0
+
+        if item == WORK_TEXT and 'WorkLine' not in result:
+            result['WorkLine'] = index + 1
+            index = 0
+
+        if item == EDU_TEXT and 'EduLine' not in result:
+            result['EduLine'] = index + 1
+            index = 0
+
+        if item == PROJ_TEXT and 'ProjLine' not in result:
+            result['ProjLine'] = index + 1
+            index = 0
+
+        if item == AWARD_TEXT and 'AwardLine' not in result:
+            result['AwardLine'] = index + 1
+            index = 0
+
+        if item == CERT_TEXT and 'CertLine' not in result:
+            result['CertLine'] = index + 1
+            index = 0
+
+    print(result)
+    return result
+
+LINES = {}
 with open(CWD + '/JLM_Resume.tex', 'r', encoding='utf8') as f:
     READ = f.readlines()
+    LINES = find_lines(READ)
 
 
 # add_name function
@@ -129,11 +171,11 @@ def add_proj(read_data, proj_line, project, start_date, end_date, summary, role)
     projects the person/candidate has worked on. """
 
     # add section if it is the first project to added
-    if not read_data[proj_line]:
+    if read_data[proj_line] is '\n':
         new_proj_sec = '\\section{PROJECTS}'
-        read_data[proj_line] = new_proj_sec
+        read_data[proj_line] = read_data[proj_line].strip() + new_proj_sec
 
-    new_proj = '\\newProj{{{}}}{{{}}}{{{}}}'.format(project, start_date, end_date)
+    new_proj = '\\newProject{{{}}}{{{}}}{{{}}}'.format(project, start_date, end_date)
     new_desc = '\\projectDescription{{{}}}{{{}}}'.format(summary, role)
 
     read_data[proj_line] = read_data[proj_line].strip() + new_proj + new_desc
@@ -145,7 +187,7 @@ def add_proj(read_data, proj_line, project, start_date, end_date, summary, role)
 def add_award(read_data, award_line, awards_list):
     """ OPTIONAL. creates a new awards section and shows a list of the candidate's awards """
 
-    if not read_data[award_line]:
+    if read_data[award_line] is '\n':
         new_award_sec = '\\section{AWARDS}'
         read_data[award_line] = new_award_sec
 
@@ -166,7 +208,7 @@ def add_award(read_data, award_line, awards_list):
 def add_cert(read_data, award_line, cert_list):
     """ OPTIONAL. creates a new awards section and shows a list of the candidate's awards """
 
-    if not read_data[award_line]:
+    if read_data[award_line] is '\n':
         new_award_sec = '\\section{CERTIFICATIONS}'
         read_data[award_line] = new_award_sec
 
@@ -192,12 +234,18 @@ def add_cert(read_data, award_line, cert_list):
 #           ex. [[company, start, end, position, [desc1, desc2]]]
 #     edu_list: list of all previous education
 #           ex. [[school1, start, end, degree], [school2, start, end, degree]]
-def create_file(filename, fullname, skill_list, work_list, edu_list):
+#     proj_list: default None; list of all relevant projects
+#           ex. [project, start, end, summary, role]
+#     award_list: default None; list of all awards
+#           ex. [award1, award2, award3, ...]
+#     cert_list: default None; list of all certifications
+#           ex. [cert1, cert2, cert3, ...]
+def create_file(filename, fullname, skill_list, work_list, edu_list, proj_list = None,
+                award_list=None, cert_list=None):
     """ TeX file creation function. incorporates all add_*() functions """
 
     read_data = list(READ)
-    input_lines = find_lines(read_data)
-
+    input_lines = LINES
     add_name(read_data, input_lines['NameLine'], fullname)
 
     # odd skill lists should have "" as the last skill
@@ -217,6 +265,15 @@ def create_file(filename, fullname, skill_list, work_list, edu_list):
         if edu_list:
             add_edu(read_data, input_lines['EduLine'], edu[0], edu[1], edu[2], edu[3])
 
+    # Optional sections
+    if proj_list:
+        for pro in proj_list:
+            add_proj(read_data, input_lines['ProjLine'], pro[0], pro[1], pro[2], pro[3], pro[4])
+    if award_list:
+        add_award(read_data, input_lines['AwardLine'], award_list)
+    if cert_list:
+        add_cert(read_data, input_lines['CertLine'], cert_list)
+
     # writes all changes to file
     with open(DUMP_DIR + filename + '.tex', 'w+', encoding='utf8') as file_w:
         file_w.writelines(read_data)
@@ -226,34 +283,7 @@ def create_file(filename, fullname, skill_list, work_list, edu_list):
     run_pdf(filename)
 
 
-# find_lines
-#     read_data: file list after using open()
-def find_lines(read_data):
-    """ changes where the injection lines would be found """
 
-    result = {'NameLine': -1, 'SkillLine': -1, 'WorkLine': -1, 'EduLine': -1}
-
-    # line search
-    for index, value in enumerate(read_data):
-        item = value.strip()
-        if item == NAME_TEXT and result['NameLine'] == -1:
-            result['NameLine'] = index + 1
-            index = 0
-
-        if item == SKILL_TEXT and result['SkillLine'] == -1:
-            result['SkillLine'] = index + 1
-            index = 0
-
-        if item == WORK_TEXT and result['WorkLine'] == -1:
-            result['WorkLine'] = index + 1
-            index = 0
-
-        if item == EDU_TEXT and result['EduLine'] == -1:
-            result['EduLine'] = index + 1
-            index = 0
-
-    print(result)
-    return result
 
 
 # run_pdf
@@ -267,3 +297,29 @@ def run_pdf(filename):
     # pdf_folder = '.' + OUT_DIR
     os.system('pdflatex --output-directory={} {}'.format(DUMP_DIR, full_file))
     os.system('mv {}/*.pdf {}'.format(DUMP_DIR, OUT_DIR))
+
+# TESTING
+
+file_name = "test.tex"
+person_name = "Jason Yatfai Zhang"
+skills = [["skill1", "skill2"], ["skill3", "skill4"], ["skill5", "skill6"], ["skill7", ""]]
+exp = [["some place","past","present","nobody",["a","b","c"]],["some place","past","present","nobody",["a","b","c"]],["some place","past","present","nobody",["a","b","c"]],["some place","past","present","nobody",["a","b","c"]]]
+edu = [["schoolA", "past", "present", "piece of paper"],["schoolB", "past", "present", "piece of paper"]]
+proje = [["project1", "start", "end", "class project", "made a project"], ["project2", "start", "end", "class project", "made a project"], ["project3", "start", "end", "class project", "made a project"], ["project4", "start", "end", "class project", "made a project"]]
+awardd = ["award1","award2","award3","award4"]
+certt = ["cert1", "cert2", "cert3", "cert4"]
+
+# test empty
+# create_file(file_name, person_name, [], [], [])
+
+# test required
+# create_file(file_name, person_name, skills, exp, edu)
+
+# test project
+# create_file(file_name, person_name, skills, exp, edu, proj_list=proje)
+
+# test award
+# create_file(file_name, person_name, skills, exp, edu, award_list=awardd)
+
+# test cert
+create_file(file_name, person_name, skills, exp, edu, cert_list=certt)
