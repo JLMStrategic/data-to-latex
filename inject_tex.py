@@ -28,6 +28,7 @@ PROJ_TEXT = '% PROJECTS CODE HERE'
 AWARD_TEXT = '% AWARDS CODE HERE'
 CERT_TEXT = '% CERTIFICATIONS CODE HERE'
 
+
 # find_lines
 #     read_data: file list after using open()
 def find_lines(read_data):
@@ -240,7 +241,7 @@ def add_cert(read_data, award_line, cert_list):
 #           ex. [award1, award2, award3, ...]
 #     cert_list: default None; list of all certifications
 #           ex. [cert1, cert2, cert3, ...]
-def create_file(filename, fullname, skill_list, work_list, edu_list, proj_list = None,
+def create_file(filename, fullname, skill_list, work_list, edu_list, proj_list=None,
                 award_list=None, cert_list=None):
     """ TeX file creation function. incorporates all add_*() functions """
 
@@ -283,9 +284,6 @@ def create_file(filename, fullname, skill_list, work_list, edu_list, proj_list =
     run_pdf(filename)
 
 
-
-
-
 # run_pdf
 #     filename: name of the tex file, does not need the .tex extension
 def run_pdf(filename):
@@ -313,7 +311,7 @@ certt = ["cert1", "cert2", "cert3", "cert4"]
 # create_file(file_name, person_name, [], [], [])
 
 # test required
-# create_file(file_name, person_name, skills, exp, edu)
+create_file(file_name, person_name, skills, exp, edu)
 
 # test project
 # create_file(file_name, person_name, skills, exp, edu, proj_list=proje)
@@ -322,4 +320,4 @@ certt = ["cert1", "cert2", "cert3", "cert4"]
 # create_file(file_name, person_name, skills, exp, edu, award_list=awardd)
 
 # test cert
-create_file(file_name, person_name, skills, exp, edu, cert_list=certt)
+# create_file(file_name, person_name, skills, exp, edu, cert_list=certt)
