@@ -24,6 +24,7 @@ SKILL_TEXT = '% SKILLS CODE HERE'
 WORK_TEXT = '% EXP CODE HERE'
 EDU_TEXT = '% EDU CODE HERE'
 
+# Optional requirements here
 PROJ_TEXT = '% PROJECTS CODE HERE'
 AWARD_TEXT = '% AWARDS CODE HERE'
 CERT_TEXT = '% CERTIFICATIONS CODE HERE'
@@ -125,6 +126,9 @@ def add_work_exp(read_data, work_line, company, start_date, end_date, position, 
     work_sec_end = '\\workExpEnd'
     desc_items = ''
 
+    # prevents from injecting letter by letter when list is not given in parameter
+    if type(desc) is not list:
+        desc = [desc]
     for item in desc:
         desc_items += add_work_desc(item)
 
@@ -293,25 +297,25 @@ def run_pdf(filename):
     # note: only works on git bash when testing
     full_file = DUMP_DIR + filename + '.tex'
     # pdf_folder = '.' + OUT_DIR
-    os.system('pdflatex --output-directory={} {}'.format(DUMP_DIR, full_file))
+    os.system('pdflatex --interaction=batchmode --output-directory={} {}'.format(DUMP_DIR, full_file))
     os.system('mv {}/*.pdf {}'.format(DUMP_DIR, OUT_DIR))
 
 # TESTING
 
-file_name = "test.tex"
-person_name = "Jason Yatfai Zhang"
-skills = [["skill1", "skill2"], ["skill3", "skill4"], ["skill5", "skill6"], ["skill7", ""]]
-exp = [["some place","past","present","nobody",["a","b","c"]],["some place","past","present","nobody",["a","b","c"]],["some place","past","present","nobody",["a","b","c"]],["some place","past","present","nobody",["a","b","c"]]]
-edu = [["schoolA", "past", "present", "piece of paper"],["schoolB", "past", "present", "piece of paper"]]
-proje = [["project1", "start", "end", "class project", "made a project"], ["project2", "start", "end", "class project", "made a project"], ["project3", "start", "end", "class project", "made a project"], ["project4", "start", "end", "class project", "made a project"]]
-awardd = ["award1","award2","award3","award4"]
-certt = ["cert1", "cert2", "cert3", "cert4"]
+# file_name = "test.tex"
+# person_name = "Jason Yatfai Zhang"
+# skills = [["skill1", "skill2"], ["skill3", "skill4"], ["skill5", "skill6"], ["skill7", ""]]
+# exp = [["some place","past","present","nobody",["a","b","c"]],["some place","past","present","nobody",["a","b","c"]],["some place","past","present","nobody",["a","b","c"]],["some place","past","present","nobody",["a","b","c"]]]
+# edu = [["schoolA", "past", "present", "piece of paper"],["schoolB", "past", "present", "piece of paper"]]
+# proje = [["project1", "start", "end", "class project", "made a project"], ["project2", "start", "end", "class project", "made a project"], ["project3", "start", "end", "class project", "made a project"], ["project4", "start", "end", "class project", "made a project"]]
+# awardd = ["award1","award2","award3","award4"]
+# certt = ["cert1", "cert2", "cert3", "cert4"]
 
 # test empty
 # create_file(file_name, person_name, [], [], [])
 
 # test required
-create_file(file_name, person_name, skills, exp, edu)
+# create_file(file_name, person_name, skills, exp, edu)
 
 # test project
 # create_file(file_name, person_name, skills, exp, edu, proj_list=proje)
