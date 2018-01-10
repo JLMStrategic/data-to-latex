@@ -20,7 +20,7 @@ def filter_alphanumeric(given):
 
 def spec_chars(given):
     """ replace # or & with "number" or "and" respectively """
-    no_ch = {'#':'number', '&':'and', '%':'\%', '\r\n•':' --', '\r\n':' ','\r':'', '\t':' ', '\n':'', '*':'', '•':'', '$':'\$'}
+    no_ch = {'#':'number', '&':'and', '%':'\%', '\r\n-':' --', '\r\n•':' --', '\r':'', '\t':' ', '\n':'', '*':'', '•':'', '$':'\$'}
     for (key, value) in no_ch.items():
         if given and key in given:
             given = given.replace(key, value)
