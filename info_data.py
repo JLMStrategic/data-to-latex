@@ -20,7 +20,7 @@ def filter_alphanumeric(given):
 
 def spec_chars(given):
     """ replace # or & with "number" or "and" respectively """
-    no_ch = {'#':'number', '&':'and', '%':'\%', '\r\n•':'.', '\r\n':' ','\r':'', '\n':'', '*':'', '•':''}
+    no_ch = {'#':'number', '&':'and', '%':'\%', '\r\n•':'.', '\r\n':' ','\r':'', '\t':' ', '\n':'', '*':'', '•':''}
     for (key,value) in no_ch.items():
         if given and key in given:
             given = given.replace(key, value)
@@ -80,10 +80,30 @@ def fill_jobs(useful):
         # job_description = check_exist(job_info, ['PositionHistory'])
         job_description = check_exist(job_info, ['Description'])
         print(job_description)
-        # job_description = []
+
         job_list.append([job_org, job_start, job_end, job_title, job_description])
 
     return job_list
+
+# fill_skills function
+#     useful: section of the json object that would be needed to use
+def fill_skills(useful):
+    """ fills out the skill array based on candidate's qualifications summary """
+    skills_sec = useful['Qualifications']['QualificationSummary'].replace('\r\n', ' --')
+    skills = spec_chars(skills_sec).split(' --')
+    skills = [s.strip() for s in [s for s in skills if s] if 'skills' not in s.lower()]
+    skill_list = []
+
+    # splits array into two-tuples
+    while len(skills) > 2:
+        split = skills[:2]
+        skill_list.append(split)
+        skills = skills[2:]
+    skill_list.append(skills)
+    if len(skill_list[-1]) == 1:
+        skill_list[-1].append('')
+
+    return skill_list
 
 def main():
     """ Testing goes here. Split these for loops into functions in the future. """
@@ -93,15 +113,14 @@ def main():
 
         useful = data['Resume']['StructuredXMLResume']
 
-        bulleted = useful['Qualifications']['QualificationSummary'].replace('\r\n•', '--').replace('--', ' -')
-        print(bulleted)
-        # person_name = check_exist(useful, ['ContactInfo', 'PersonName', 'GivenName']) + ' ' +\
-        #             check_exist(useful, ['ContactInfo', 'PersonName', 'FamilyName'])
+        person_name = check_exist(useful, ['ContactInfo', 'PersonName', 'GivenName']) + ' ' +\
+                    check_exist(useful, ['ContactInfo', 'PersonName', 'FamilyName'])
 
-        # school_list = fill_school(useful)
-        # job_list = fill_jobs(useful)
+        skill_list = fill_skills(useful)
+        school_list = fill_school(useful)
+        job_list = fill_jobs(useful)
 
-        # file_name = person_name.replace(' ', '-') + '-JLM'
-        # create_file(file_name, person_name, [], job_list, school_list)
+        file_name = person_name.replace(' ', '-') + '-JLM'
+        create_file(file_name, person_name, skill_list, job_list, school_list)
 
 main()

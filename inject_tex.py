@@ -258,6 +258,8 @@ def create_file(filename, fullname, skill_list, work_list, edu_list, proj_list=N
     for skill in skill_list:
         if not last_skill:
             break
+        if not skill:
+            continue
         if skill == last_skill:
             add_skill(read_data, input_lines['SkillLine'], skill[0], skill[1], end=True)
         else:
