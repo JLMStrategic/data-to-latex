@@ -20,8 +20,8 @@ def filter_alphanumeric(given):
 
 def spec_chars(given):
     """ replace # or & with "number" or "and" respectively """
-    no_ch = {'#':'number', '&':'and', '%':'\%', '\r\n•':'.', '\r\n':' ','\r':'', '\t':' ', '\n':'', '*':'', '•':''}
-    for (key,value) in no_ch.items():
+    no_ch = {'#':'number', '&':'and', '%':'\%', '\r\n•':' --', '\r\n':' ','\r':'', '\t':' ', '\n':'', '*':'', '•':'', '$':'\$'}
+    for (key, value) in no_ch.items():
         if given and key in given:
             given = given.replace(key, value)
 
@@ -78,7 +78,7 @@ def fill_jobs(useful):
         job_title = check_exist(job_info, ['Title'])
         # job_description = useful['EmploymentHistory']['EmployerOrg'][0]['PositionHistory'][0]['Description']
         # job_description = check_exist(job_info, ['PositionHistory'])
-        job_description = check_exist(job_info, ['Description'])
+        job_description = check_exist(job_info, ['Description']).split(' --')
         print(job_description)
 
         job_list.append([job_org, job_start, job_end, job_title, job_description])
@@ -89,7 +89,11 @@ def fill_jobs(useful):
 #     useful: section of the json object that would be needed to use
 def fill_skills(useful):
     """ fills out the skill array based on candidate's qualifications summary """
-    skills_sec = useful['Qualifications']['QualificationSummary'].replace('\r\n', ' --')
+    try:
+        skills_sec = useful['Qualifications']['QualificationSummary'].replace('\r\n', ' --')
+    except:
+        return [['none', 'none']]
+
     skills = spec_chars(skills_sec).split(' --')
     skills = [s.strip() for s in [s for s in skills if s] if 'skills' not in s.lower()]
     skill_list = []
